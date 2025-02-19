@@ -1,36 +1,79 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:news_app/apis/api_manager.dart';
+import 'package:news_app/screens/tab_bar.dart';
+import 'package:news_app/screens/tab_item.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   static const String routName = "Home";
 
-  const HomeScreen({super.key});
+   HomeScreen({super.key});
+
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  int selectedTabIndex=0;
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text("News"),
-      ),
-      body: FutureBuilder(
-        future: ApiManager.getSources(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
-          }
-          if (snapshot.hasError) {
-            return Text("Something went wrong");
-          }
-          var sources = snapshot.data?.sources ?? [];
+    return Container(
+      decoration: BoxDecoration(
+          color: Colors.white,
+          image:
+              DecorationImage(image: AssetImage("assets/images/pattern.png"))),
+      child: Scaffold(
+        drawer: Drawer(),
+        backgroundColor: Colors.transparent,
+        appBar: AppBar(
+          backgroundColor: Colors.green,
+          centerTitle: true,
+          actions: [IconButton(onPressed: () {}, icon: Icon(Icons.search))],
+          iconTheme: IconThemeData(
+            color: Colors.white,
+            size: 35,
+          ),
+          shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.only(
+            bottomLeft: Radius.circular(25),
+            bottomRight: Radius.circular(25),
+          )),
+          title: Text(
+            "News App",
+            style: TextStyle(
+                fontSize: 30, fontWeight: FontWeight.w400, color: Colors.white),
+          ),
+        ),
+        body:Column(
+          children: [
+            TabBarWidget(),
+            FutureBuilder(future: ApiManager.getNewsData("abc-news-au"),
+                builder: (context, snapshot) {
 
-          return ListView.builder(
-            itemBuilder: (context, index) {
-              return Text(sources[index].name ?? "");
-            },
-            itemCount: sources.length,
-          );
-        },
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Center(child: CircularProgressIndicator());
+                  }
+                  if (snapshot.hasError) {
+                    return Text("Something went wrong");
+                  }
+
+                  var articles = snapshot.data?.articles ?? [];
+                  return Expanded(
+                    child: ListView.separated(
+                      separatorBuilder: (context, index) => SizedBox(
+                        height: 15,
+                      ),
+                        itemBuilder: (context, index) {
+                          return Text(articles[index].title ?? '');
+                        },
+                      itemCount: articles.length,
+                    ),
+                  );
+                },
+            )
+          ],
+        ) ,
       ),
     );
   }
