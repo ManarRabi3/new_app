@@ -23,29 +23,57 @@ class _TabBarWidgetState extends State<TabBarWidget> {
           return Text("Something went wrong");
         }
         var sources = snapshot.data?.sources ?? [];
-        return DefaultTabController(
-            length: sources.length,
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: TabBar(
-                  isScrollable: true,
-                  dividerColor: Colors.transparent,
-                  indicatorColor: Colors.transparent,
+        return Column(
+          children: [
+            DefaultTabController(
+                length: sources.length,
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: TabBar(
+                      isScrollable: true,
+                      dividerColor: Colors.transparent,
+                      indicatorColor: Colors.transparent,
 
-                  onTap: (value) {
-                    selectedTabIndex=value;
+                      onTap: (value) {
+                        selectedTabIndex=value;
 
-                    setState(() {
+                        setState(() {
 
-                    });
-                  },
-                  tabs: sources
-                      .map((e) => TabItem(
-                    source:e,
-                    isSelected: sources.elementAt(selectedTabIndex)==e,
-                  ))
-                      .toList()),
-            ));
+                        });
+                      },
+                      tabs: sources
+                          .map((e) => TabItem(
+                        source:e,
+                        isSelected: sources.elementAt(selectedTabIndex)==e,
+                      ))
+                          .toList()),
+                )),
+            FutureBuilder(future: ApiManager.getNewsData(sources[selectedTabIndex].id??""),
+              builder: (context, snapshot) {
+
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return Center(child: CircularProgressIndicator());
+                }
+                if (snapshot.hasError) {
+                  return Text("Something went wrong");
+                }
+
+                var articles = snapshot.data?.articles ?? [];
+                return Expanded(
+                  child: ListView.separated(
+                    separatorBuilder: (context, index) => SizedBox(
+                      height: 15,
+                    ),
+                    itemBuilder: (context, index) {
+                      return Text(articles[index].title ?? '');
+                    },
+                    itemCount: articles.length,
+                  ),
+                );
+              },
+            )
+          ],
+        );
       },
     );
   }

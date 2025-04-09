@@ -45,35 +45,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 fontSize: 30, fontWeight: FontWeight.w400, color: Colors.white),
           ),
         ),
-        body:Column(
-          children: [
-            TabBarWidget(),
-            FutureBuilder(future: ApiManager.getNewsData("abc-news-au"),
-                builder: (context, snapshot) {
-
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return Center(child: CircularProgressIndicator());
-                  }
-                  if (snapshot.hasError) {
-                    return Text("Something went wrong");
-                  }
-
-                  var articles = snapshot.data?.articles ?? [];
-                  return Expanded(
-                    child: ListView.separated(
-                      separatorBuilder: (context, index) => SizedBox(
-                        height: 15,
-                      ),
-                        itemBuilder: (context, index) {
-                          return Text(articles[index].title ?? '');
-                        },
-                      itemCount: articles.length,
-                    ),
-                  );
-                },
-            )
-          ],
-        ) ,
+        body:TabBarWidget() ,
       ),
     );
   }
