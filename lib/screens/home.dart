@@ -1,20 +1,22 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:news_app/apis/api_manager.dart';
+import 'package:news_app/models/categoryModel.dart';
+import 'package:news_app/screens/categories.dart';
 import 'package:news_app/screens/tab_bar.dart';
 import 'package:news_app/screens/tab_item.dart';
 
 class HomeScreen extends StatefulWidget {
   static const String routName = "Home";
 
-   HomeScreen({super.key});
+  HomeScreen({super.key});
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  int selectedTabIndex=0;
+  int selectedTabIndex = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -45,8 +47,19 @@ class _HomeScreenState extends State<HomeScreen> {
                 fontSize: 30, fontWeight: FontWeight.w400, color: Colors.white),
           ),
         ),
-        body:TabBarWidget() ,
+        body: selectedCategory == null
+            ? CategoriesTab(
+                onClick: onCategorySelect,
+              )
+            : TabBarWidget(),
       ),
     );
+  }
+
+  CategoryModel? selectedCategory = null;
+
+  onCategorySelect(cat) {
+    selectedCategory = cat;
+    setState(() {});
   }
 }
