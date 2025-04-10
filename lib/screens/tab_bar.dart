@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:news_app/apis/api_manager.dart';
+import 'package:news_app/screens/news_item.dart';
 import 'package:news_app/screens/tab_item.dart';
 
 class TabBarWidget extends StatefulWidget {
@@ -23,56 +24,60 @@ class _TabBarWidgetState extends State<TabBarWidget> {
           return Text("Something went wrong");
         }
         var sources = snapshot.data?.sources ?? [];
-        return Column(
-          children: [
-            DefaultTabController(
-                length: sources.length,
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: TabBar(
-                      isScrollable: true,
-                      dividerColor: Colors.transparent,
-                      indicatorColor: Colors.transparent,
-
-                      onTap: (value) {
-                        selectedTabIndex=value;
-
-                        setState(() {
-
-                        });
+        return SingleChildScrollView(
+          physics: NeverScrollableScrollPhysics(),
+          child: Column(
+            children: [
+              DefaultTabController(
+                  length: sources.length,
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: TabBar(
+                        isScrollable: true,
+                        dividerColor: Colors.transparent,
+                        indicatorColor: Colors.transparent,
+          
+                        onTap: (value) {
+                          selectedTabIndex=value;
+          
+                          setState(() {
+          
+                          });
+                        },
+                        tabs: sources
+                            .map((e) => TabItem(
+                          source:e,
+                          isSelected: sources.elementAt(selectedTabIndex)==e,
+                        ))
+                            .toList()),
+                  )),
+              FutureBuilder(future: ApiManager.getNewsData(sources[selectedTabIndex].id??""),
+                builder: (context, snapshot) {
+          
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Center(child: CircularProgressIndicator());
+                   }
+                  if (snapshot.hasError) {
+                    return Text("Something went wrong");
+                  }
+          
+                  var articles = snapshot.data?.articles ?? [];
+                  return Container(
+                    height: 1200,
+                    child: ListView.separated(
+                      separatorBuilder: (context, index) => SizedBox(
+                        height: 15,
+                      ),
+                      itemBuilder: (context, index) {
+                        return NewsItem(article: articles[index],);
                       },
-                      tabs: sources
-                          .map((e) => TabItem(
-                        source:e,
-                        isSelected: sources.elementAt(selectedTabIndex)==e,
-                      ))
-                          .toList()),
-                )),
-            FutureBuilder(future: ApiManager.getNewsData(sources[selectedTabIndex].id??""),
-              builder: (context, snapshot) {
-
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return Center(child: CircularProgressIndicator());
-                }
-                if (snapshot.hasError) {
-                  return Text("Something went wrong");
-                }
-
-                var articles = snapshot.data?.articles ?? [];
-                return Expanded(
-                  child: ListView.separated(
-                    separatorBuilder: (context, index) => SizedBox(
-                      height: 15,
+                      itemCount: articles.length,
                     ),
-                    itemBuilder: (context, index) {
-                      return Text(articles[index].title ?? '');
-                    },
-                    itemCount: articles.length,
-                  ),
-                );
-              },
-            )
-          ],
+                  );
+                },
+              )
+            ],
+          ),
         );
       },
     );
