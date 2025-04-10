@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:news_app/apis/api_manager.dart';
 import 'package:news_app/models/categoryModel.dart';
 import 'package:news_app/screens/categories.dart';
+import 'package:news_app/screens/drawer_tab.dart';
 import 'package:news_app/screens/tab_bar.dart';
 import 'package:news_app/screens/tab_item.dart';
 
@@ -26,8 +27,10 @@ class _HomeScreenState extends State<HomeScreen> {
           image:
               DecorationImage(image: AssetImage("assets/images/pattern.png"))),
       child: Scaffold(
-        drawer: Drawer(),
         backgroundColor: Colors.transparent,
+        drawer:DrawerTab(
+          onClick:onDrawerClick ,
+        ),
         appBar: AppBar(
           backgroundColor: Colors.green,
           centerTitle: true,
@@ -57,6 +60,22 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   CategoryModel? selectedCategory = null;
+
+
+  onDrawerClick(id){
+
+    if(id == DrawerTab.CATEGORY_ID){
+      selectedCategory =null;
+
+      Navigator.pop(context);
+    }else if (id ==DrawerTab.SETTINGS_ID){
+
+    }
+    setState(() {
+
+    });
+
+  }
 
   onCategorySelect(cat) {
     selectedCategory = cat;

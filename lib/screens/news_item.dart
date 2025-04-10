@@ -25,7 +25,8 @@ borderRadius: BorderRadius.only(
 ),
              
              
-             child: Image.network(article.urlToImage ??"")),
+             child: Image.network(article.urlToImage ??"",
+             height: 240,)),
           Text(
             article.author ?? "",
             textAlign: TextAlign.start,
