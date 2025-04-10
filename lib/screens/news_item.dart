@@ -23,7 +23,8 @@ class NewsItem extends StatelessWidget {
 borderRadius: BorderRadius.only(
   topLeft: Radius.circular(25),topRight: Radius.circular(25)
 ),
-             
+
+
              
              child: Image.network(article.urlToImage ??"",
              height: 240,)),
